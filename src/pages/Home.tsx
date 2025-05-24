@@ -11,14 +11,14 @@ import FavoritesButton from "@/components/FavoritesButton"
 import { getFavoriteIds } from "@/services/favoriteToggle"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/redux/store"
-import { setIsLoading, setMovies, setNoMovieMessage, setPage, setQuery, setTotalPages } from "@/redux/searchSlice"
+import { setMovies, setNoMovieMessage, setPage, setQuery, setTotalPages } from "@/redux/searchSlice"
 
 export default function Home() {
     const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false)
 
     const movies = useSelector((state: RootState) => state.search.movies);
     const totalPages = useSelector((state: RootState) => state.search.totalPages);
-    const isLoading = useSelector((state: RootState) => state.search.isLoading);
     const noMovieMessage = useSelector((state: RootState) => state.search.noMovieMessage);
     const searchQuery = useSelector((state: RootState) => state.search.query);
     const currentPage = useSelector((state: RootState) => state.search.currentPage);
@@ -26,13 +26,12 @@ export default function Home() {
 
     const fetchMovies = async (query: string, page: number) => {
         if (query.trim() === "") {
-            dispatch(setIsLoading(false));
             dispatch(setMovies([]));
             dispatch(setPage(1))
             return;
         }
 
-        dispatch(setIsLoading(true));
+        setIsLoading(true);
         try {
             const moviesData = await getMovies(page, query);
             if (moviesData?.success) {
@@ -50,11 +49,11 @@ export default function Home() {
         } catch (error: unknown) {
             toast((error as Error).message ||"Something went wrong")
         } finally {
-            dispatch(setIsLoading(false));
+            setIsLoading(false);
         }
     };
 
-    const debouncedFetch = useMemo(() => debounce(fetchMovies, 500), []);
+    const debouncedFetch = useMemo(() => debounce(fetchMovies, 300), []);
 
     useEffect(() => {
         if (searchQuery.trim() === "") {
@@ -62,10 +61,9 @@ export default function Home() {
             dispatch(setTotalPages(1));
             dispatch(setNoMovieMessage(null));
             dispatch(setPage(1));
-            dispatch(setIsLoading(false));
             return;
         }
-        dispatch(setIsLoading(true));
+        setIsLoading(true);
         debouncedFetch(searchQuery, currentPage);
         return () => {
             debouncedFetch.cancel();
@@ -105,7 +103,7 @@ export default function Home() {
 
                 {isLoading ? (
                     <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
+                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-300"></div>
                     </div>
                 ) : movies.length > 0 ? (
                     <>

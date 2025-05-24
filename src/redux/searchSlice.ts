@@ -6,7 +6,6 @@ interface SearchState {
     currentPage: number;
     movies: IMovie[];
     totalPages: number;
-    isLoading: boolean;
     noMovieMessage: string | null;
 }
 
@@ -15,7 +14,6 @@ const initialState: SearchState = {
     currentPage: 1,
     movies: [],
     totalPages: 1,
-    isLoading: false,
     noMovieMessage: null,
 };
 
@@ -35,9 +33,6 @@ export const searchSlice = createSlice({
         setTotalPages(state, action: PayloadAction<number>) {
             state.totalPages = action.payload;
         },
-        setIsLoading(state, action: PayloadAction<boolean>) {
-            state.isLoading = action.payload;
-        },
         setNoMovieMessage(state, action: PayloadAction<string | null>) {
             state.noMovieMessage = action.payload;
         },
@@ -46,7 +41,6 @@ export const searchSlice = createSlice({
             state.currentPage = 1;
             state.movies = [];
             state.totalPages = 1;
-            state.isLoading = false;
             state.noMovieMessage = null;
         },
     }
@@ -57,7 +51,6 @@ export const {
     setPage,
     setMovies,
     setTotalPages,
-    setIsLoading,
     setNoMovieMessage,
     resetSearch,
 } = searchSlice.actions;
